@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+const (
+	version = "1.0.0"
+)
+
 type cli struct {
 	outStream, errStream io.Writer
 }
@@ -25,6 +29,11 @@ func (cli *cli) Run(args []string) int {
 	if err := flg.Parse(args[1:]); err != nil {
 		fmt.Fprintf(cli.outStream, "%s\n", err)
 		os.Exit(1)
+	}
+
+	if showVersion {
+		fmt.Fprintf(cli.outStream, "%s\n", "pcd's version is "+version)
+		os.Exit(0)
 	}
 
 	pwd, err := os.Getwd()
