@@ -13,11 +13,13 @@ const (
 	version = "1.0.0"
 )
 
-type cli struct {
+// CLI is Struct for stdio.
+type CLI struct {
 	outStream, errStream io.Writer
 }
 
-func (cli *cli) Run(args []string) int {
+// Run a cli tools.
+func (cli *CLI) Run(args []string) int {
 
 	var (
 		showVersion bool
@@ -38,7 +40,7 @@ func (cli *cli) Run(args []string) int {
 
 	pwd, err := os.Getwd()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(cli.errStream, err)
 		os.Exit(1)
 	}
 
@@ -46,9 +48,11 @@ func (cli *cli) Run(args []string) int {
 	for idx := range dirNames {
 		path := filepath.FromSlash(strings.Join(dirNames[0:idx+1], "/"))
 		if path == "" {
-			fmt.Fprintln(os.Stdout, "/")
+			fmt.Fprintln(cli.outStream, "/")
+		} else if strings.Contains(path, ":") {
+			fmt.Fprintln(cli.outStream, strings.ReplaceAll(path, ":", ":\\"))
 		} else {
-			fmt.Fprintln(os.Stdout, path)
+			fmt.Fprintln(cli.outStream, path)
 		}
 	}
 	return 0
@@ -56,7 +60,7 @@ func (cli *cli) Run(args []string) int {
 
 func main() {
 
-	cli := &cli{
+	cli := &CLI{
 		outStream: os.Stdout,
 		errStream: os.Stderr,
 	}
