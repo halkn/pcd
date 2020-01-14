@@ -49,7 +49,7 @@ func (cli *CLI) Run(args []string) int {
 		path := filepath.FromSlash(strings.Join(dirNames[0:idx+1], "/"))
 		if path == "" {
 			fmt.Fprintln(cli.outStream, "/")
-		} else if strings.Contains(path, ":") {
+		} else if strings.HasSuffix(path, ":") {
 			fmt.Fprintln(cli.outStream, strings.ReplaceAll(path, ":", ":\\"))
 		} else {
 			fmt.Fprintln(cli.outStream, path)
