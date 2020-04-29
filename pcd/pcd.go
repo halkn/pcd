@@ -18,7 +18,7 @@ const (
 func Run(argv []string, outStream, errStream io.Writer) error {
 	var showVersion bool
 
-	flg := flag.NewFlagSet("pcd", flag.ExitOnError)
+	flg := flag.NewFlagSet("pcd", flag.ContinueOnError)
 	flg.SetOutput(errStream)
 
 	flg.BoolVar(&showVersion, "version", false, "show version")
@@ -35,33 +35,23 @@ func Run(argv []string, outStream, errStream io.Writer) error {
 
 func printVersion(out io.Writer) error {
 	_, err := fmt.Fprintln(out, "pcd's version is", version)
-	if err != nil {
-		return fmt.Errorf("print err version: %s", err)
-	}
-	return nil
+	return err
 }
 
 func printPathList(out io.Writer) error {
-	wd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("error occurred While getting Current Directory : %s", err)
-	}
+	wd := os.Getenv("PWD")
 	dirNames := strings.Split(filepath.ToSlash(wd), "/")
 	lists := ""
 	for idx := range dirNames {
 		path := filepath.FromSlash(strings.Join(dirNames[0:idx+1], "/"))
-		if path == "" {
-			lists = "/\n"
-		} else if strings.HasSuffix(path, ":") {
-			lists = strings.ReplaceAll(path, ":", ":\\") + "\n"
+		if idx == 0 {
+			lists += path + "/\n"
 		} else {
 			lists += path + "\n"
 		}
+		lists = filepath.FromSlash(lists)
 	}
 
-	_, err = fmt.Fprint(out, lists)
-	if err != nil {
-		return fmt.Errorf("print err version: %s", err)
-	}
-	return nil
+	_, err := fmt.Fprint(out, lists)
+	return err
 }
