@@ -9,8 +9,7 @@ import (
 
 func main() {
 
-	err := pcd.Run(os.Args[1:], os.Stdout, os.Stderr)
-	if err != nil {
+	if err := pcd.Run(os.Args[1:], os.Stdout, os.Stderr); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
